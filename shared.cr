@@ -1,6 +1,6 @@
 require "colorize"
 
-class Assertions
+module Assertions
   @@assertion_hashes = [] of UInt64
   @@counts = [] of UInt64
 

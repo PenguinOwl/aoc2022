@@ -23,7 +23,7 @@ rucksacks.in_groups_of(3).each do |group|
       value += 26
     end
     assert value <= 52
-    assert value > 14
+    assert value > 0
     total += value
   end
 end
