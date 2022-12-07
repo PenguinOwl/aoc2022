@@ -17,7 +17,11 @@ macro assert(code)
   hash = {{code.stringify}}.hash
   file_loc = "{{code.filename.gsub(/^.+\//,"").id}}:{{code.line_number}} "
   if ({{code}})
-    string = ("* " + file_loc).colorize(:green).to_s + {{code.stringify}} + (" value: " + ({{code.receiver}}).inspect).colorize.mode(:dim).to_s
+    {% if code.is_a?(Call) %}
+      string = ("* " + file_loc).colorize(:green).to_s + {{code.stringify}} + (" value: " + ({{code.receiver}}).inspect).colorize.mode(:dim).to_s
+    {% else %}
+      string = ("* " + file_loc).colorize(:green).to_s + {{code.stringify}} + (" value: " + ({{code}}).to_s).colorize.mode(:dim).to_s
+    {% end %}
     if index = Assertions.hashes.index(hash)
       lines = Assertions.hashes.size - index
       print "\033[s\033[#{lines}A\033[K",string," (#{Assertions.counts[index]} more)", "\033[u"
@@ -28,7 +32,12 @@ macro assert(code)
       Assertions.counts << 1u64
     end
   else
-    puts ("* " + file_loc).colorize(:red).to_s + {{code.stringify}} + (" value: " + ({{code.receiver}}).inspect).colorize.mode(:dim).to_s
+    {% if code.is_a?(Call) %}
+      string = ("* " + file_loc).colorize(:red).to_s + {{code.stringify}} + (" value: " + ({{code.receiver}}).inspect).colorize.mode(:dim).to_s
+    {% else %}
+      string = ("* " + file_loc).colorize(:red).to_s + {{code.stringify}} + (" value: " + ({{code}}).to_s).colorize.mode(:dim).to_s
+    {% end %}
+    puts string
     Assertions.hashes.clear
     Assertions.counts.clear
     if ENV["DEBUG"]? == "1"
